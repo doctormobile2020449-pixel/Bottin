@@ -13,8 +13,8 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Environment Variables
-GROQ_API_KEY = os.getenv("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")
+# Environment Variables (Fixed to look up the correct env variable name)
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 MODEL_NAME = "llama-3.1-8b-instant"
 MAX_MESSAGE = 1900
@@ -100,7 +100,7 @@ def _post(payload: bytes) -> dict:
         GROQ_URL,
         data=payload,
         headers={
-            "Authorization": f"Bearer {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}",
+            "Authorization": f"Bearer {GROQ_API_KEY}",
             "Content-Type": "application/json",
         },
         method="POST",
@@ -145,10 +145,8 @@ async def _run_query(system_prompt: str, user_prompt: str) -> str:
 async def execute_ai_query(prompt: str, is_debug: bool) -> str:
     system_prompt = SYSTEM_PROMPT_DEBUG if is_debug else SYSTEM_PROMPT_LUAU
     
-    # First, get the raw code
     code_answer = await _run_query(system_prompt, prompt)
     
-    # Then, feed the code back into the prose prompt to format it
     codename = "DEBUG" if is_debug else "LUAU"
     language = "cpp" if is_debug else "lua"
     
